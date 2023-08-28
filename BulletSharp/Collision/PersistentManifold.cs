@@ -25,8 +25,10 @@ namespace BulletSharp
 
 		private static bool ContactDestroyedUnmanaged(IntPtr userPersistentData)
 		{
-			_contactDestroyed.Invoke(GCHandle.FromIntPtr(userPersistentData).Target);
-			return false;
+			GCHandle handle = GCHandle.FromIntPtr(userPersistentData);
+            _contactDestroyed.Invoke(GCHandle.FromIntPtr(userPersistentData).Target);
+			handle.Free();
+            return false;
 		}
 
 		private static bool ContactProcessedUnmanaged(IntPtr cp, IntPtr body0, IntPtr body1)
