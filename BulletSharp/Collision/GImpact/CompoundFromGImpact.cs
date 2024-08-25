@@ -1,4 +1,4 @@
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace BulletSharp
 {
@@ -66,7 +66,7 @@ namespace BulletSharp
 			}
 
 			var triangle = new BuSimplex1To4(v0, v1, v2, rayTo);
-			_collisionShape.AddChildShape(Matrix4x4.Identity, triangle);
+			_collisionShape.AddChildShape(Matrix4.Identity, triangle);
 		}
 	}
 
@@ -78,7 +78,7 @@ namespace BulletSharp
 			using (var callback = new MyInternalTriangleIndexCallback(shape, impactMesh, depth))
 			{
 				Vector3 aabbMin, aabbMax;
-				impactMesh.GetAabb(Matrix4x4.Identity, out aabbMin, out aabbMax);
+				impactMesh.GetAabb(Matrix4.Identity, out aabbMin, out aabbMax);
 				impactMesh.MeshInterface.InternalProcessAllTriangles(callback, aabbMin, aabbMax);
 			}
 			return shape;

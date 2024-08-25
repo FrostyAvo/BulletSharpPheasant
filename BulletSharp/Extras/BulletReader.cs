@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Numerics;
+using OpenTK.Mathematics;
 using System.Text;
 
 namespace BulletSharp
@@ -43,7 +43,7 @@ namespace BulletSharp
             return ReadInt64();
         }
 
-        public Matrix4x4 ReadMatrix()
+        public Matrix4 ReadMatrix()
         {
             float[] m = new float[16];
             m[0] = ReadSingle();
@@ -63,10 +63,10 @@ namespace BulletSharp
             m[14] = ReadSingle();
             ReadSingle();
             m[15] = 1;
-            return MathUtil.MakeMatrix4x4(m);
+            return MathUtil.MakeMatrix4(m);
         }
 
-        public Matrix4x4 ReadMatrixDouble()
+        public Matrix4 ReadMatrixDouble()
         {
             float[] m = new float[16];
             m[0] = (float)ReadDouble();
@@ -86,16 +86,16 @@ namespace BulletSharp
             m[14] = (float)ReadDouble();
             ReadDouble();
             m[15] = 1;
-            return MathUtil.MakeMatrix4x4(m);
+            return MathUtil.MakeMatrix4(m);
         }
 
-        public Matrix4x4 ReadMatrix(int position)
+        public Matrix4 ReadMatrix(int position)
         {
             BaseStream.Position = position;
             return ReadMatrix();
         }
 
-        public Matrix4x4 ReadMatrixDouble(int position)
+        public Matrix4 ReadMatrixDouble(int position)
         {
             BaseStream.Position = position;
             return ReadMatrixDouble();
@@ -177,9 +177,9 @@ namespace BulletSharp
             return ReadVector3Double();
         }
 
-        public static Matrix4x4 ToMatrix(byte[] value, int startIndex)
+        public static Matrix4 ToMatrix(byte[] value, int startIndex)
         {
-            return new Matrix4x4(
+            return new Matrix4(
                 BitConverter.ToSingle(value, startIndex),
                 BitConverter.ToSingle(value, startIndex + 16),
                 BitConverter.ToSingle(value, startIndex + 32),
@@ -198,9 +198,9 @@ namespace BulletSharp
                 1);
         }
 
-        public static Matrix4x4 ToMatrixDouble(byte[] value, int startIndex)
+        public static Matrix4 ToMatrixDouble(byte[] value, int startIndex)
         {
-            return new Matrix4x4(
+            return new Matrix4(
                 (float)BitConverter.ToDouble(value, startIndex),
                 (float)BitConverter.ToDouble(value, startIndex + 32),
                 (float)BitConverter.ToDouble(value, startIndex + 64),

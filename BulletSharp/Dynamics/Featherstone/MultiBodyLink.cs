@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -179,11 +179,11 @@ namespace BulletSharp
 			set => btMultibodyLink_setCachedRVectorInterpolate(Native, ref value);
 		}
 
-		public Matrix4x4 CachedWorldTransform
+		public Matrix4 CachedWorldTransform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btMultibodyLink_getCachedWorldTransform(Native, out value);
 				return value;
 			}

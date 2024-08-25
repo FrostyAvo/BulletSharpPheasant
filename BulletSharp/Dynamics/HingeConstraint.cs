@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -39,8 +39,8 @@ namespace BulletSharp
 			InitializeMembers(rigidBodyA, GetFixedBody());
 		}
 
-		public HingeConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix4x4 rigidBodyAFrame,
-			Matrix4x4 rigidBodyBFrame, bool useReferenceFrameA = false)
+		public HingeConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix4 rigidBodyAFrame,
+			Matrix4 rigidBodyBFrame, bool useReferenceFrameA = false)
 		{
 			IntPtr native = btHingeConstraint_new3(rigidBodyA.Native, rigidBodyB.Native,
 				ref rigidBodyAFrame, ref rigidBodyBFrame, useReferenceFrameA);
@@ -48,7 +48,7 @@ namespace BulletSharp
 			InitializeMembers(rigidBodyA, rigidBodyB);
 		}
 
-		public HingeConstraint(RigidBody rigidBodyA, Matrix4x4 rigidBodyAFrame, bool useReferenceFrameA = false)
+		public HingeConstraint(RigidBody rigidBodyA, Matrix4 rigidBodyAFrame, bool useReferenceFrameA = false)
 		{
 			IntPtr native = btHingeConstraint_new4(rigidBodyA.Native, ref rigidBodyAFrame,
 				useReferenceFrameA);
@@ -62,12 +62,12 @@ namespace BulletSharp
 				maxMotorImpulse);
 		}
 
-		public float GetHingeAngleRef(ref Matrix4x4 transA, ref Matrix4x4 transB)
+		public float GetHingeAngleRef(ref Matrix4 transA, ref Matrix4 transB)
 		{
 			return btHingeConstraint_getHingeAngle(Native, ref transA, ref transB);
 		}
 
-		public float GetHingeAngle(Matrix4x4 transA, Matrix4x4 transB)
+		public float GetHingeAngle(Matrix4 transA, Matrix4 transB)
 		{
 			return btHingeConstraint_getHingeAngle(Native, ref transA, ref transB);
 		}
@@ -77,21 +77,21 @@ namespace BulletSharp
 			btHingeConstraint_getInfo1NonVirtual(Native, info.Native);
 		}
 
-		public void GetInfo2Internal(ConstraintInfo2 info, Matrix4x4 transA, Matrix4x4 transB,
+		public void GetInfo2Internal(ConstraintInfo2 info, Matrix4 transA, Matrix4 transB,
 			Vector3 angVelA, Vector3 angVelB)
 		{
 			btHingeConstraint_getInfo2Internal(Native, info.Native, ref transA,
 				ref transB, ref angVelA, ref angVelB);
 		}
 
-		public void GetInfo2InternalUsingFrameOffset(ConstraintInfo2 info, Matrix4x4 transA,
-			Matrix4x4 transB, Vector3 angVelA, Vector3 angVelB)
+		public void GetInfo2InternalUsingFrameOffset(ConstraintInfo2 info, Matrix4 transA,
+			Matrix4 transB, Vector3 angVelA, Vector3 angVelB)
 		{
 			btHingeConstraint_getInfo2InternalUsingFrameOffset(Native, info.Native,
 				ref transA, ref transB, ref angVelA, ref angVelB);
 		}
 
-		public void GetInfo2NonVirtual(ConstraintInfo2 info, Matrix4x4 transA, Matrix4x4 transB,
+		public void GetInfo2NonVirtual(ConstraintInfo2 info, Matrix4 transA, Matrix4 transB,
 			Vector3 angVelA, Vector3 angVelB)
 		{
 			btHingeConstraint_getInfo2NonVirtual(Native, info.Native, ref transA,
@@ -108,12 +108,12 @@ namespace BulletSharp
 			btHingeConstraint_setAxis(Native, ref axisInA);
 		}
 
-		public void SetFramesRef(ref Matrix4x4 frameA, ref Matrix4x4 frameB)
+		public void SetFramesRef(ref Matrix4 frameA, ref Matrix4 frameB)
 		{
 			btHingeConstraint_setFrames(Native, ref frameA, ref frameB);
 		}
 
-		public void SetFrames(Matrix4x4 frameA, Matrix4x4 frameB)
+		public void SetFrames(Matrix4 frameA, Matrix4 frameB)
 		{
 			btHingeConstraint_setFrames(Native, ref frameA, ref frameB);
 		}
@@ -155,12 +155,12 @@ namespace BulletSharp
 			btHingeConstraint_setMotorTarget2(Native, ref qAinB, deltaTime);
 		}
 
-		public void TestLimitRef(ref Matrix4x4 transA, ref Matrix4x4 transB)
+		public void TestLimitRef(ref Matrix4 transA, ref Matrix4 transB)
 		{
 			btHingeConstraint_testLimit(Native, ref transA, ref transB);
 		}
 
-		public void TestLimit(Matrix4x4 transA, Matrix4x4 transB)
+		public void TestLimit(Matrix4 transA, Matrix4 transB)
 		{
 			btHingeConstraint_testLimit(Native, ref transA, ref transB);
 		}
@@ -170,11 +170,11 @@ namespace BulletSharp
 			btHingeConstraint_updateRHS(Native, timeStep);
 		}
 
-		public Matrix4x4 AFrame
+		public Matrix4 AFrame
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btHingeConstraint_getAFrame(Native, out value);
 				return value;
 			}
@@ -186,11 +186,11 @@ namespace BulletSharp
 			set => btHingeConstraint_setAngularOnly(Native, value);
 		}
 
-		public Matrix4x4 BFrame
+		public Matrix4 BFrame
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btHingeConstraint_getBFrame(Native, out value);
 				return value;
 			}
@@ -204,21 +204,21 @@ namespace BulletSharp
 
 		public HingeFlags Flags => btHingeConstraint_getFlags(Native);
 
-		public Matrix4x4 FrameOffsetA
+		public Matrix4 FrameOffsetA
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btHingeConstraint_getFrameOffsetA(Native, out value);
 				return value;
 			}
 		}
 
-		public Matrix4x4 FrameOffsetB
+		public Matrix4 FrameOffsetB
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btHingeConstraint_getFrameOffsetB(Native, out value);
 				return value;
 			}
@@ -284,7 +284,7 @@ namespace BulletSharp
 		}
 
 		public HingeAccumulatedAngleConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB,
-			Matrix4x4 rigidBodyAFrame, Matrix4x4 rigidBodyBFrame, bool useReferenceFrameA = false)
+			Matrix4 rigidBodyAFrame, Matrix4 rigidBodyBFrame, bool useReferenceFrameA = false)
 		{
 			IntPtr native = btHingeAccumulatedAngleConstraint_new3(rigidBodyA.Native, rigidBodyB.Native,
 				ref rigidBodyAFrame, ref rigidBodyBFrame, useReferenceFrameA);
@@ -292,7 +292,7 @@ namespace BulletSharp
 			InitializeMembers(rigidBodyA, GetFixedBody());
 		}
 
-		public HingeAccumulatedAngleConstraint(RigidBody rigidBodyA, Matrix4x4 rigidBodyAFrame,
+		public HingeAccumulatedAngleConstraint(RigidBody rigidBodyA, Matrix4 rigidBodyAFrame,
 			bool useReferenceFrameA = false)
 		{
 			IntPtr native = btHingeAccumulatedAngleConstraint_new4(rigidBodyA.Native, ref rigidBodyAFrame,

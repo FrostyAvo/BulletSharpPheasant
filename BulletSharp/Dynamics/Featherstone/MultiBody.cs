@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -272,9 +272,9 @@ namespace BulletSharp
 			return value;
 		}
 
-		public Matrix4x4 LocalFrameToWorld(int i, Matrix4x4 mat)
+		public Matrix4 LocalFrameToWorld(int i, Matrix4 mat)
 		{
-			Matrix4x4 value;
+			Matrix4 value;
 			btMultiBody_localFrameToWorld(Native, i, ref mat, out value);
 			return value;
 		}
@@ -495,11 +495,11 @@ namespace BulletSharp
 			set => btMultiBody_setBaseVel(Native, ref value);
 		}
 
-		public Matrix4x4 BaseWorldTransform
+		public Matrix4 BaseWorldTransform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btMultiBody_getBaseWorldTransform(Native, out value);
 				return value;
 			}

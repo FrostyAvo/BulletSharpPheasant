@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace BulletSharp
 {
@@ -59,7 +59,7 @@ namespace BulletSharp
 
             if (distance < HitFraction)
             {
-                float edgeTolerance = triangleNormal.LengthSquared();
+                float edgeTolerance = triangleNormal.LengthSquared;
                 edgeTolerance *= -0.0001f;
                 Vector3 point = Vector3.Lerp(From, To, distance);
                 {
@@ -107,7 +107,7 @@ namespace BulletSharp
 
 	public abstract class TriangleConvexcastCallback : TriangleCallback
 	{
-        public TriangleConvexcastCallback(ConvexShape convexShape, ref Matrix4x4 convexShapeFrom, ref Matrix4x4 convexShapeTo, ref Matrix4x4 triangleToWorld, float triangleCollisionMargin)
+        public TriangleConvexcastCallback(ConvexShape convexShape, ref Matrix4 convexShapeFrom, ref Matrix4 convexShapeTo, ref Matrix4 triangleToWorld, float triangleCollisionMargin)
         {
             ConvexShape = convexShape;
             ConvexShapeFrom = convexShapeFrom;
@@ -128,10 +128,10 @@ namespace BulletSharp
 
         public float AllowedPenetration { get; set; }
         public ConvexShape ConvexShape { get; set; }
-        public Matrix4x4 ConvexShapeFrom { get; set; }
-        public Matrix4x4 ConvexShapeTo { get; set; }
+        public Matrix4 ConvexShapeFrom { get; set; }
+        public Matrix4 ConvexShapeTo { get; set; }
         public float HitFraction { get; set; }
         public float TriangleCollisionMargin { get; set; }
-        public Matrix4x4 TriangleToWorld { get; set; }
+        public Matrix4 TriangleToWorld { get; set; }
 	}
 }

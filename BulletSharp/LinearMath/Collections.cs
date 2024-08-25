@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -104,7 +104,7 @@ namespace BulletSharp
 		{
 		}
 
-		public void AddChildShape(ref Matrix4x4 localTransform, CollisionShape shape)
+		public void AddChildShape(ref Matrix4 localTransform, CollisionShape shape)
 		{
 			IntPtr childListOld = (Count != 0) ? btCompoundShape_getChildList(Native) : IntPtr.Zero;
 			btCompoundShape_addChildShape(Native, ref localTransform, shape.Native);

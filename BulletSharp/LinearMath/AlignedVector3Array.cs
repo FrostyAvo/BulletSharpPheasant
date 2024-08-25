@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp

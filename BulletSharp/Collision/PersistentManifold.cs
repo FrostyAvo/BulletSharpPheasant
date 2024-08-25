@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -126,12 +126,12 @@ namespace BulletSharp
 			return new ManifoldPoint(btPersistentManifold_getContactPoint(Native, index));
 		}
 
-		public void RefreshContactPointsRef(ref Matrix4x4 trA, ref Matrix4x4 trB)
+		public void RefreshContactPointsRef(ref Matrix4 trA, ref Matrix4 trB)
 		{
 			btPersistentManifold_refreshContactPoints(Native, ref trA, ref trB);
 		}
 
-		public void RefreshContactPoints(Matrix4x4 trA, Matrix4x4 trB)
+		public void RefreshContactPoints(Matrix4 trA, Matrix4 trB)
 		{
 			btPersistentManifold_refreshContactPoints(Native, ref trA, ref trB);
 		}

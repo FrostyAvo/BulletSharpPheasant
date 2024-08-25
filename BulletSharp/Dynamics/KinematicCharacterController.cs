@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace BulletSharp
 {
@@ -66,7 +66,7 @@ namespace BulletSharp
 
         protected static Vector3 GetNormalizedVector(ref Vector3 v)
         {
-            if (v.Length() < MathUtil.SIMD_EPSILON)
+            if (v.Length < MathUtil.SIMD_EPSILON)
             {
                 return Vector3.Zero;
             }
@@ -111,7 +111,7 @@ namespace BulletSharp
 
             collisionWorld.Dispatcher.DispatchAllCollisionPairs(m_ghostObject.OverlappingPairCache, collisionWorld.DispatchInfo, collisionWorld.Dispatcher);
 
-            m_currentPosition = m_ghostObject.WorldTransform.Translation;
+            m_currentPosition = m_ghostObject.WorldTransform.ExtractTranslation();
 
             //  btScalar maxPen = btScalar(0.0);
             for (int i = 0; i < m_ghostObject.OverlappingPairCache.NumOverlappingPairs; i++)
@@ -164,8 +164,8 @@ namespace BulletSharp
                     //manifold.ClearManifold();
                 }
             }
-            Matrix4x4 newTrans = m_ghostObject.WorldTransform;
-            newTrans.Translation = m_currentPosition;
+            Matrix4 newTrans = m_ghostObject.WorldTransform;
+            newTrans.Row3.Xyz = m_currentPosition;
             m_ghostObject.WorldTransform = newTrans;
             //System.Console.WriteLine("m_touchingNormal = " + m_touchingNormal);
             return penetration;
@@ -178,18 +178,18 @@ namespace BulletSharp
                 stepHeight = m_stepHeight;
 
             // phase 1: up
-            Matrix4x4 start, end;
+            Matrix4 start, end;
 
-            start = Matrix4x4.Identity;
-            end = Matrix4x4.Identity;
+            start = Matrix4.Identity;
+            end = Matrix4.Identity;
 
             /* FIX ME: Handle penetration properly */
-            start.Translation = m_currentPosition;
+            start.Row3.Xyz = m_currentPosition;
 
             m_targetPosition = m_currentPosition + m_up * (stepHeight) + m_jumpAxis * ((m_verticalOffset > 0f ? m_verticalOffset : 0f));
             m_currentPosition = m_targetPosition;
 
-            end.Translation = m_targetPosition;
+            end.Row3.Xyz = m_targetPosition;
 
             start.SetRotation(m_currentOrientation, out start);
             end.SetRotation(m_targetOrientation, out end);
@@ -221,8 +221,8 @@ namespace BulletSharp
                             m_currentPosition = m_targetPosition;
                     }
 
-                    Matrix4x4 xform = m_ghostObject.WorldTransform;
-                    xform.Translation = m_currentPosition;
+                    Matrix4 xform = m_ghostObject.WorldTransform;
+                    xform.Row3.Xyz = m_currentPosition;
                     m_ghostObject.WorldTransform = xform;
 
                     // fix penetration if we hit a ceiling for example
@@ -238,7 +238,7 @@ namespace BulletSharp
                             break;
                         }
                     }
-                    m_targetPosition = m_ghostObject.WorldTransform.Translation;
+                    m_targetPosition = m_ghostObject.WorldTransform.ExtractTranslation();
                     m_currentPosition = m_targetPosition;
 
                     if (m_verticalOffset > 0)
@@ -258,7 +258,7 @@ namespace BulletSharp
         protected void UpdateTargetPositionBasedOnCollision(ref Vector3 hitNormal, float tangentMag = 0f, float normalMag = 1f)
         {
             Vector3 movementDirection = m_targetPosition - m_currentPosition;
-            float movementLength = movementDirection.Length();
+            float movementLength = movementDirection.Length;
             if (movementLength > MathUtil.SIMD_EPSILON)
             {
                 movementDirection = Vector3.Normalize(movementDirection);
@@ -296,21 +296,21 @@ namespace BulletSharp
         {
             //System.Console.WriteLine("m_normalizedDirection=" + m_normalizedDirection);
             // phase 2: forward and strafe
-            Matrix4x4 start = Matrix4x4.Identity;
-            Matrix4x4 end = Matrix4x4.Identity;
+            Matrix4 start = Matrix4.Identity;
+            Matrix4 end = Matrix4.Identity;
 
             m_targetPosition = m_currentPosition + walkMove;
 
             float fraction = 1.0f;
-            float distance2 = (m_currentPosition - m_targetPosition).LengthSquared();
+            float distance2 = (m_currentPosition - m_targetPosition).LengthSquared;
             //System.Console.WriteLine("distance2=" + distance2);
 
             int maxIter = 10;
 
             while (fraction > 0.01f && maxIter-- > 0)
             {
-                start.Translation = m_currentPosition;
-                end.Translation = m_targetPosition;
+                start.Row3.Xyz = m_currentPosition;
+                end.Row3.Xyz = m_targetPosition;
                 Vector3 sweepDirNegative = m_currentPosition - m_targetPosition;
 
                 start.SetRotation(m_currentOrientation, out start);
@@ -348,7 +348,7 @@ namespace BulletSharp
                         Vector3 hitNormalWorld = callback.HitNormalWorld;
                         UpdateTargetPositionBasedOnCollision(ref hitNormalWorld);
                         Vector3 currentDir = m_targetPosition - m_currentPosition;
-                        distance2 = currentDir.LengthSquared();
+                        distance2 = currentDir.LengthSquared;
                         if (distance2 > MathUtil.SIMD_EPSILON)
                         {
                             currentDir = Vector3.Normalize(currentDir);
@@ -373,7 +373,7 @@ namespace BulletSharp
         }
         protected void StepDown(CollisionWorld collisionWorld, float dt)
         {
-            Matrix4x4 start, end, end_double;
+            Matrix4 start, end, end_double;
             bool runonce = false;
 
             // phase 3: down
@@ -407,14 +407,14 @@ namespace BulletSharp
 
                 while (true)
                 {
-                    start = Matrix4x4.CreateTranslation(m_currentPosition);
-                    end = Matrix4x4.CreateTranslation(m_targetPosition);
+                    start = Matrix4.CreateTranslation(m_currentPosition);
+                    end = Matrix4.CreateTranslation(m_targetPosition);
 
                     start.SetRotation(m_currentOrientation, out start);
                     end.SetRotation(m_targetOrientation, out end);
 
                     //set double test for 2x the step drop, to check for a large drop vs small drop
-                    end_double = Matrix4x4.CreateTranslation(m_targetPosition - step_drop);
+                    end_double = Matrix4.CreateTranslation(m_targetPosition - step_drop);
 
                     if (m_useGhostObjectSweepTest)
                     {
@@ -526,7 +526,7 @@ namespace BulletSharp
 
             Vector3 u = m_up;
 
-            if (up.LengthSquared() > 0)
+            if (up.LengthSquared > 0)
                 m_up = Vector3.Normalize(up);
             else
                 m_up = Vector3.Zero;
@@ -535,16 +535,16 @@ namespace BulletSharp
             Quaternion rot = GetRotation(ref m_up, ref u);
 
             //set orientation with new up
-            Matrix4x4 xform;
+            Matrix4 xform;
             xform = m_ghostObject.WorldTransform;
-            Quaternion orn = Quaternion.Inverse(rot) * xform.GetRotation();
+            Quaternion orn = rot.Inverted() * xform.GetRotation();
             xform.SetRotation(orn, out xform);
             m_ghostObject.WorldTransform = xform;
         }
 
         protected Quaternion GetRotation(ref Vector3 v0, ref Vector3 v1)
         {
-            if (v0.LengthSquared() == 0.0f || v1.LengthSquared() == 0.0f)
+            if (v0.LengthSquared == 0.0f || v1.LengthSquared == 0.0f)
             {
                 return Quaternion.Identity;
             }
@@ -589,7 +589,7 @@ namespace BulletSharp
             get => m_up;
             set
             {
-                if (value.LengthSquared() > 0 && m_gravity > 0.0f)
+                if (value.LengthSquared > 0 && m_gravity > 0.0f)
                 {
                     Gravity = -m_gravity * Vector3.Normalize(value);
                     return;
@@ -651,21 +651,21 @@ namespace BulletSharp
                 m_walkDirection = velocity;
 
                 // HACK: if we are moving in the direction of the up, treat it as a jump :(
-                if (m_walkDirection.LengthSquared() > 0)
+                if (m_walkDirection.LengthSquared > 0)
                 {
                     Vector3 w = Vector3.Normalize(velocity);
                     float c = Vector3.Dot(w, m_up);
                     if (c != 0)
                     {
                         //there is a component in walkdirection for vertical velocity
-                        Vector3 upComponent = m_up * ((float)System.Math.Sin(MathUtil.SIMD_HALF_PI - System.Math.Acos(c)) * m_walkDirection.Length());
+                        Vector3 upComponent = m_up * ((float)System.Math.Sin(MathUtil.SIMD_HALF_PI - System.Math.Acos(c)) * m_walkDirection.Length);
                         m_walkDirection -= upComponent;
-                        m_verticalVelocity = (c < 0.0f ? -1 : 1) * upComponent.Length();
+                        m_verticalVelocity = (c < 0.0f ? -1 : 1) * upComponent.Length;
 
                         if (c > 0.0f)
                         {
                             m_wasJumping = true;
-                            m_jumpPosition = m_ghostObject.WorldTransform.Translation;
+                            m_jumpPosition = m_ghostObject.WorldTransform.ExtractTranslation();
                         }
                     }
                 }
@@ -706,19 +706,18 @@ namespace BulletSharp
 
         public void Warp(ref Vector3 origin)
         {
-            Matrix4x4 xform;
-            xform = Matrix4x4.Identity;
-            xform.Translation = origin;
+            Matrix4 xform;
+            xform = Matrix4.Identity;
+            xform.Row3.Xyz = origin;
             m_ghostObject.WorldTransform = xform;
         }
 
         public void PreStep(CollisionWorld collisionWorld)
         {
-            m_currentPosition = m_ghostObject.WorldTransform.Translation;
+            m_currentPosition = m_ghostObject.WorldTransform.ExtractTranslation();
             m_targetPosition = m_currentPosition;
 
-            Matrix4x4.Decompose(m_ghostObject.WorldTransform, out _, out m_currentOrientation, out _);
-            m_targetOrientation = m_currentOrientation;
+            m_targetOrientation = m_ghostObject.WorldTransform.ExtractRotation();
             //System.Console.WriteLine("m_targetPosition=" + m_targetPosition);
         }
 
@@ -727,25 +726,25 @@ namespace BulletSharp
             //System.Console.WriteLine("PlayerStep():");
             //System.Console.WriteLine("  dt = " + dt);
 
-            if (m_AngVel.LengthSquared() > 0.0f)
+            if (m_AngVel.LengthSquared > 0.0f)
             {
                 m_AngVel *= (float)System.Math.Pow(1f - m_angularDamping, dt);
             }
 
-            Matrix4x4 xform;
+            Matrix4 xform;
             // integrate for angular velocity
-            if (m_AngVel.LengthSquared() > 0.0f)
+            if (m_AngVel.LengthSquared > 0.0f)
             {
                 xform = m_ghostObject.WorldTransform;
 
-                Quaternion rot = new Quaternion(Vector3.Normalize(m_AngVel), m_AngVel.Length() * dt);
+                Quaternion rot = new Quaternion(Vector3.Normalize(m_AngVel), m_AngVel.Length * dt);
 
                 Quaternion orn = rot * xform.GetRotation();
 
                 xform.SetRotation(orn, out xform);
                 m_ghostObject.WorldTransform = xform;
 
-                m_currentPosition = m_ghostObject.WorldTransform.Translation;
+                m_currentPosition = m_ghostObject.WorldTransform.ExtractTranslation();
                 m_targetPosition = m_currentPosition;
                 m_currentOrientation = m_ghostObject.WorldTransform.GetRotation();
                 m_targetOrientation = m_currentOrientation;
@@ -763,7 +762,7 @@ namespace BulletSharp
             //btVector3 lvel = m_walkDirection;
             //btScalar c = 0.0f;
 
-            if (m_walkDirection.LengthSquared() > 0)
+            if (m_walkDirection.LengthSquared > 0)
             {
                 // apply damping
                 m_walkDirection *= (float)System.Math.Pow(1f - m_linearDamping, dt);
@@ -846,7 +845,7 @@ namespace BulletSharp
             //}
             //System.Console.WriteLine();
 
-            xform.Translation = m_currentPosition;
+            xform.Row3.Xyz = m_currentPosition;
             m_ghostObject.WorldTransform = xform;
 
             int numPenetrationLoops = 0;
@@ -892,18 +891,18 @@ namespace BulletSharp
 
             m_jumpAxis = m_up;
 
-            m_jumpPosition = m_ghostObject.WorldTransform.Translation;
+            m_jumpPosition = m_ghostObject.WorldTransform.ExtractTranslation();
         }
 
         public void Jump(ref Vector3 dir)
         {
-            m_jumpSpeed = dir.Length();
+            m_jumpSpeed = dir.Length;
             m_verticalVelocity = m_jumpSpeed;
             m_wasJumping = true;
 
             m_jumpAxis = Vector3.Normalize(dir);
 
-            m_jumpPosition = m_ghostObject.WorldTransform.Translation;
+            m_jumpPosition = m_ghostObject.WorldTransform.ExtractTranslation();
 
 #if false
             // currently no jumping.
@@ -927,8 +926,8 @@ namespace BulletSharp
             set
             {
                 Vector3 gravity = value;
-                m_gravity = gravity.Length();
-                if (gravity.LengthSquared() > 0)
+                m_gravity = gravity.Length;
+                if (gravity.LengthSquared > 0)
                 {
                     gravity = -gravity;
                     SetUpVector(ref gravity);
@@ -1053,8 +1052,8 @@ namespace BulletSharp
             else
             {
                 // need to transform normal into worldspace
-                Matrix4x4 hitWorldTransform = convexResult.HitCollisionObject.WorldTransform;
-                hitNormalWorld = Vector3.Transform(convexResult.HitNormalLocal, hitWorldTransform.GetBasis());
+                Matrix4 hitWorldTransform = convexResult.HitCollisionObject.WorldTransform;
+                hitNormalWorld = (hitWorldTransform * new Vector4(convexResult.HitNormalLocal, 0.0f)).Xyz;
             }
 
             float dotUp = Vector3.Dot(_up, hitNormalWorld);

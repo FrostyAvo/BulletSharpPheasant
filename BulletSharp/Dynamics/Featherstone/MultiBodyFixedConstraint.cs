@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -7,7 +7,7 @@ namespace BulletSharp
 	public class MultiBodyFixedConstraint : MultiBodyConstraint
 	{
 		public MultiBodyFixedConstraint(MultiBody body, int link, RigidBody bodyB,
-			Vector3 pivotInA, Vector3 pivotInB, Matrix4x4 frameInA, Matrix4x4 frameInB)
+			Vector3 pivotInA, Vector3 pivotInB, Matrix4 frameInA, Matrix4 frameInB)
 		{
 			IntPtr native = btMultiBodyFixedConstraint_new(body.Native, link, bodyB.Native,
 				ref pivotInA, ref pivotInB, ref frameInA, ref frameInB);
@@ -16,7 +16,7 @@ namespace BulletSharp
 		}
 
 		public MultiBodyFixedConstraint(MultiBody bodyA, int linkA, MultiBody bodyB,
-			int linkB, Vector3 pivotInA, Vector3 pivotInB, Matrix4x4 frameInA, Matrix4x4 frameInB)
+			int linkB, Vector3 pivotInA, Vector3 pivotInB, Matrix4 frameInA, Matrix4 frameInB)
 		{
 			IntPtr native = btMultiBodyFixedConstraint_new2(bodyA.Native, linkA, bodyB.Native,
 				linkB, ref pivotInA, ref pivotInB, ref frameInA, ref frameInB);
@@ -24,22 +24,22 @@ namespace BulletSharp
 			InitializeMembers(bodyA, bodyB);
 		}
 
-		public Matrix4x4 FrameInA
+		public Matrix4 FrameInA
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btMultiBodyFixedConstraint_getFrameInA(Native, out value);
 				return value;
 			}
 			set => btMultiBodyFixedConstraint_setFrameInA(Native, ref value);
 		}
 
-		public Matrix4x4 FrameInB
+		public Matrix4 FrameInB
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btMultiBodyFixedConstraint_getFrameInB(Native, out value);
 				return value;
 			}

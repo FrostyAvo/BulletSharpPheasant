@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -16,8 +16,8 @@ namespace BulletSharp
 
 	public class ConeTwistConstraint : TypedConstraint
 	{
-		public ConeTwistConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix4x4 rigidBodyAFrame,
-			Matrix4x4 rigidBodyBFrame)
+		public ConeTwistConstraint(RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix4 rigidBodyAFrame,
+			Matrix4 rigidBodyBFrame)
 		{
 			IntPtr native = btConeTwistConstraint_new(rigidBodyA.Native, rigidBodyB.Native,
 				ref rigidBodyAFrame, ref rigidBodyBFrame);
@@ -25,7 +25,7 @@ namespace BulletSharp
 			InitializeMembers(rigidBodyA, rigidBodyB);
 		}
 
-		public ConeTwistConstraint(RigidBody rigidBodyA, Matrix4x4 rigidBodyAFrame)
+		public ConeTwistConstraint(RigidBody rigidBodyA, Matrix4 rigidBodyAFrame)
 		{
 			IntPtr native = btConeTwistConstraint_new2(rigidBodyA.Native, ref rigidBodyAFrame);
 			InitializeUserOwned(native);
@@ -37,15 +37,15 @@ namespace BulletSharp
 			btConeTwistConstraint_calcAngleInfo(Native);
 		}
 
-		public void CalcAngleInfo2Ref(ref Matrix4x4 transA, ref Matrix4x4 transB, ref Matrix4x4 invInertiaWorldA,
-			Matrix4x4 invInertiaWorldB)
+		public void CalcAngleInfo2Ref(ref Matrix4 transA, ref Matrix4 transB, ref Matrix4 invInertiaWorldA,
+			Matrix4 invInertiaWorldB)
 		{
 			btConeTwistConstraint_calcAngleInfo2(Native, ref transA, ref transB,
 				ref invInertiaWorldA, ref invInertiaWorldB);
 		}
 
-		public void CalcAngleInfo2(Matrix4x4 transA, Matrix4x4 transB, Matrix4x4 invInertiaWorldA,
-			Matrix4x4 invInertiaWorldB)
+		public void CalcAngleInfo2(Matrix4 transA, Matrix4 transB, Matrix4 invInertiaWorldA,
+			Matrix4 invInertiaWorldB)
 		{
 			btConeTwistConstraint_calcAngleInfo2(Native, ref transA, ref transB,
 				ref invInertiaWorldA, ref invInertiaWorldB);
@@ -56,15 +56,15 @@ namespace BulletSharp
 			btConeTwistConstraint_enableMotor(Native, b);
 		}
 
-		public void GetInfo2NonVirtualRef(ConstraintInfo2 info, ref Matrix4x4 transA, ref Matrix4x4 transB,
-			Matrix4x4 invInertiaWorldA, Matrix4x4 invInertiaWorldB)
+		public void GetInfo2NonVirtualRef(ConstraintInfo2 info, ref Matrix4 transA, ref Matrix4 transB,
+			Matrix4 invInertiaWorldA, Matrix4 invInertiaWorldB)
 		{
 			btConeTwistConstraint_getInfo2NonVirtual(Native, info.Native, ref transA,
 				ref transB, ref invInertiaWorldA, ref invInertiaWorldB);
 		}
 
-		public void GetInfo2NonVirtual(ConstraintInfo2 info, Matrix4x4 transA, Matrix4x4 transB,
-			Matrix4x4 invInertiaWorldA, Matrix4x4 invInertiaWorldB)
+		public void GetInfo2NonVirtual(ConstraintInfo2 info, Matrix4 transA, Matrix4 transB,
+			Matrix4 invInertiaWorldA, Matrix4 invInertiaWorldB)
 		{
 			btConeTwistConstraint_getInfo2NonVirtual(Native, info.Native, ref transA,
 				ref transB, ref invInertiaWorldA, ref invInertiaWorldB);
@@ -83,12 +83,12 @@ namespace BulletSharp
 			return value;
 		}
 
-		public void SetFramesRef(ref Matrix4x4 frameA, ref Matrix4x4 frameB)
+		public void SetFramesRef(ref Matrix4 frameA, ref Matrix4 frameB)
 		{
 			btConeTwistConstraint_setFrames(Native, ref frameA, ref frameB);
 		}
 
-		public void SetFrames(Matrix4x4 frameA, Matrix4x4 frameB)
+		public void SetFrames(Matrix4 frameA, Matrix4 frameB)
 		{
 			btConeTwistConstraint_setFrames(Native, ref frameA, ref frameB);
 		}
@@ -120,11 +120,11 @@ namespace BulletSharp
 			btConeTwistConstraint_updateRHS(Native, timeStep);
 		}
 
-		public Matrix4x4 AFrame
+		public Matrix4 AFrame
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btConeTwistConstraint_getAFrame(Native, out value);
 				return value;
 			}
@@ -136,11 +136,11 @@ namespace BulletSharp
 			set => btConeTwistConstraint_setAngularOnly(Native, value);
 		}
 
-		public Matrix4x4 BFrame
+		public Matrix4 BFrame
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btConeTwistConstraint_getBFrame(Native, out value);
 				return value;
 			}
@@ -162,21 +162,21 @@ namespace BulletSharp
 
 		public ConeTwistFlags Flags => btConeTwistConstraint_getFlags(Native);
 
-		public Matrix4x4 FrameOffsetA
+		public Matrix4 FrameOffsetA
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btConeTwistConstraint_getFrameOffsetA(Native, out value);
 				return value;
 			}
 		}
 
-		public Matrix4x4 FrameOffsetB
+		public Matrix4 FrameOffsetB
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btConeTwistConstraint_getFrameOffsetB(Native, out value);
 				return value;
 			}

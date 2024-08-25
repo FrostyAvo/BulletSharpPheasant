@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -20,22 +20,22 @@ namespace BulletSharp
 				set => btDiscreteCollisionDetectorInterface_ClosestPointInput_setMaximumDistanceSquared(Native, value);
 			}
 
-			public Matrix4x4 TransformA
+			public Matrix4 TransformA
 			{
 				get
 				{
-					Matrix4x4 value;
+					Matrix4 value;
 					btDiscreteCollisionDetectorInterface_ClosestPointInput_getTransformA(Native, out value);
 					return value;
 				}
 				set => btDiscreteCollisionDetectorInterface_ClosestPointInput_setTransformA(Native, ref value);
 			}
 
-			public Matrix4x4 TransformB
+			public Matrix4 TransformB
 			{
 				get
 				{
-					Matrix4x4 value;
+					Matrix4 value;
 					btDiscreteCollisionDetectorInterface_ClosestPointInput_getTransformB(Native, out value);
 					return value;
 				}

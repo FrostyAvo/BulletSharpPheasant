@@ -23,7 +23,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Numerics;
+using OpenTK.Mathematics;
 using System.Runtime.InteropServices;
 
 namespace BulletSharp
@@ -685,7 +685,7 @@ namespace BulletSharp
 
         public static bool FuzzyZero(Vector3 val)
         {
-            return val.LengthSquared() < SIMD_EPSILON * SIMD_EPSILON;
+            return val.LengthSquared < SIMD_EPSILON * SIMD_EPSILON;
         }
 
         public static uint Select(uint condition, uint valueIfConditionNonZero, uint valueIfConditionZero)
@@ -753,11 +753,11 @@ namespace BulletSharp
             Quaternion diff, sum;
             diff = input1 - input2;
             sum = input1 + input2;
-            if (Quaternion.Dot(diff, diff) > Quaternion.Dot(sum, sum))
+            if (diff.X * diff.X + diff.Y * diff.Y + diff.Z * diff.Z + diff.W * diff.W > sum.X * sum.X + sum.Y * sum.Y + sum.Z * sum.Z + sum.W * sum.W)
             {
                 return input2;
             }
-            return (-input2);
+            return input2.Inverted();
         }
 
         public static Vector3 QuatRotate(ref Quaternion rotation, ref Vector3 v)
@@ -881,7 +881,7 @@ namespace BulletSharp
         [Conditional("DEBUG")]
         public static void ZeroCheckVector(ref Vector3 v)
         {
-            if (FuzzyZero(v.LengthSquared()))
+            if (FuzzyZero(v.LengthSquared))
             {
                 //Debug.Assert(false);
             }
@@ -1151,27 +1151,28 @@ namespace BulletSharp
         {
             Vector3 xa = new Vector3(x.X, 0, x.Z);
             Vector3 ya = new Vector3(y.X, 0, y.Z);
-            return (xa - ya).LengthSquared();
+            return (xa - ya).LengthSquared;
         }
 
-        public static void SetRotation(this Matrix4x4 matrix, Quaternion newRotation, out Matrix4x4 result)
+        public static void SetRotation(this Matrix4 matrix, Quaternion newRotation, out Matrix4 result)
         {
-            Matrix4x4.Decompose(matrix, out Vector3 scale, out _, out Vector3 translation);
-            result = Matrix4x4.CreateScale(scale) * Matrix4x4.CreateFromQuaternion(newRotation) * Matrix4x4.CreateTranslation(translation);
+            Vector3 translation = matrix.ExtractTranslation();
+            Vector3 scale = matrix.ExtractScale();
+
+            result = Matrix4.CreateScale(scale) * Matrix4.CreateFromQuaternion(newRotation) * Matrix4.CreateTranslation(translation);
         }
 
-        public static Quaternion GetRotation(this Matrix4x4 matrix)
+        public static Quaternion GetRotation(this Matrix4 matrix)
         {
-            Matrix4x4.Decompose(matrix, out _, out Quaternion rot, out _);
-            return rot;
+            return matrix.ExtractRotation();
         }
 
-        public static Vector3 GetColumn(this Matrix4x4 matrix, int column)
+        public static Vector3 GetColumn(this Matrix4 matrix, int column)
         {
             return new Vector3(matrix.GetComponent(0, column), matrix.GetComponent(1, column), matrix.GetComponent(2, column));
         }
 
-        public static Vector3 GetRow(this Matrix4x4 matrix, int row)
+        public static Vector3 GetRow(this Matrix4 matrix, int row)
         {
             return new Vector3(matrix.GetComponent(row, 0), matrix.GetComponent(row, 1), matrix.GetComponent(row, 2));
         }
@@ -1223,15 +1224,15 @@ namespace BulletSharp
             return new Vector3(values[0], values[1], values[2]);
         }
 
-        public static Matrix4x4 GetBasis(this Matrix4x4 matrix)
+        public static Matrix4 GetBasis(this Matrix4 matrix)
         {
-            return new Matrix4x4(matrix.M11, matrix.M12, matrix.M13, 0,
+            return new Matrix4(matrix.M11, matrix.M12, matrix.M13, 0,
                                  matrix.M21, matrix.M22, matrix.M23, 0,
                                  matrix.M31, matrix.M32, matrix.M33, 0,
                                  0, 0, 0, 1);
         }
 
-        public static void SetBasis(ref this Matrix4x4 matrix, Matrix4x4 basis)
+        public static void SetBasis(ref this Matrix4 matrix, Matrix4 basis)
         {
             matrix.M11 = basis.M11;
             matrix.M12 = basis.M12;
@@ -1244,7 +1245,7 @@ namespace BulletSharp
             matrix.M33 = basis.M33;
         }
 
-        public static float GetComponent(ref this Matrix4x4 matrix, int index)
+        public static float GetComponent(ref this Matrix4 matrix, int index)
         {
             switch (index)
             {
@@ -1269,7 +1270,7 @@ namespace BulletSharp
             throw new ArgumentOutOfRangeException("index", "Indices for Matrix run from 0 to 15, inclusive.");
         }
 
-        public static void SetComponent(ref this Matrix4x4 matrix, int index, float value)
+        public static void SetComponent(ref this Matrix4 matrix, int index, float value)
         {
             switch (index)
             {
@@ -1293,7 +1294,7 @@ namespace BulletSharp
             }
         }
 
-        public static float GetComponent(this Matrix4x4 matrix, int row, int column)
+        public static float GetComponent(this Matrix4 matrix, int row, int column)
         {
             if (row < 0 || row > 3)
                 throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
@@ -1303,7 +1304,7 @@ namespace BulletSharp
             return matrix.GetComponent((row * 4) + column);
         }
 
-        public static void SetComponent(ref this Matrix4x4 matrix, int row, int column, float value)
+        public static void SetComponent(ref this Matrix4 matrix, int row, int column, float value)
         {
             if (row < 0 || row > 3)
                 throw new ArgumentOutOfRangeException("row", "Rows and columns for matrices run from 0 to 3, inclusive.");
@@ -1313,14 +1314,14 @@ namespace BulletSharp
             matrix.SetComponent((row * 4) + column, value);
         }
 
-        public static Matrix4x4 MakeMatrix4x4(float[] values)
+        public static Matrix4 MakeMatrix4(float[] values)
         {
             if (values == null)
                 throw new ArgumentNullException(nameof(values));
             if (values.Length != 16)
-                throw new ArgumentOutOfRangeException(nameof(values), "There must be sixteen and only sixteen input values for a Matrix4x4.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be sixteen and only sixteen input values for a Matrix4.");
 
-            return new Matrix4x4(values[0], values[1], values[2], values[3],
+            return new Matrix4(values[0], values[1], values[2], values[3],
                                  values[4], values[5], values[6], values[7],
                                  values[8], values[9], values[10], values[11],
                                  values[12], values[13], values[14], values[15]);

@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -47,11 +47,11 @@ namespace BulletSharp
 			set => btCompoundShapeChild_setNode(Native, (value != null) ? value.Native : IntPtr.Zero);
 		}
 
-		public Matrix4x4 Transform
+		public Matrix4 Transform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btCompoundShapeChild_getTransform(Native, out value);
 				return value;
 			}
@@ -69,17 +69,17 @@ namespace BulletSharp
 			ChildList = new CompoundShapeChildArray(Native);
 		}
 
-		public void AddChildShapeRef(ref Matrix4x4 localTransform, CollisionShape shape)
+		public void AddChildShapeRef(ref Matrix4 localTransform, CollisionShape shape)
 		{
 			ChildList.AddChildShape(ref localTransform, shape);
 		}
 
-		public void AddChildShape(Matrix4x4 localTransform, CollisionShape shape)
+		public void AddChildShape(Matrix4 localTransform, CollisionShape shape)
 		{
 			ChildList.AddChildShape(ref localTransform, shape);
 		}
 
-	   public void CalculatePrincipalAxisTransform(float[] masses, ref Matrix4x4 principal,
+	   public void CalculatePrincipalAxisTransform(float[] masses, ref Matrix4 principal,
 			out Vector3 inertia)
 		{
 			btCompoundShape_calculatePrincipalAxisTransform(Native, masses,
@@ -96,14 +96,14 @@ namespace BulletSharp
 			return ChildList[index].ChildShape;
 		}
 
-		public void GetChildTransform(int index, out Matrix4x4 value)
+		public void GetChildTransform(int index, out Matrix4 value)
 		{
 			btCompoundShape_getChildTransform(Native, index, out value);
 		}
 
-		public Matrix4x4 GetChildTransform(int index)
+		public Matrix4 GetChildTransform(int index)
 		{
-			Matrix4x4 value;
+			Matrix4 value;
 			btCompoundShape_getChildTransform(Native, index, out value);
 			return value;
 		}
@@ -123,7 +123,7 @@ namespace BulletSharp
 			ChildList.RemoveChildShapeByIndex(childShapeIndex);
 		}
 
-		public void UpdateChildTransform(int childIndex, Matrix4x4 newChildTransform,
+		public void UpdateChildTransform(int childIndex, Matrix4 newChildTransform,
 			bool shouldRecalculateLocalAabb = true)
 		{
 			btCompoundShape_updateChildTransform(Native, childIndex, ref newChildTransform,

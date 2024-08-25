@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp.SoftBody
@@ -366,11 +366,11 @@ namespace BulletSharp.SoftBody
 			set => btSoftBody_Anchor_setBody(Native, (value != null) ? value.Native : IntPtr.Zero);
 		}
 
-		public Matrix4x4 C0
+		public Matrix4 C0
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Anchor_getC0(Native, out value);
 				return value;
 			}
@@ -529,11 +529,11 @@ namespace BulletSharp.SoftBody
 
 		public float InverseMass => btSoftBody_Body_invMass(Native);
 
-		public Matrix4x4 InverseWorldInertia
+		public Matrix4 InverseWorldInertia
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Body_invWorldInertia(Native, out value);
 				return value;
 			}
@@ -572,11 +572,11 @@ namespace BulletSharp.SoftBody
 			}
 		}
 
-		public Matrix4x4 Transform
+		public Matrix4 Transform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Body_xform(Native, out value);
 				return value;
 			}
@@ -725,11 +725,11 @@ namespace BulletSharp.SoftBody
 			}
 		}
 
-		public Matrix4x4 FrameTransform
+		public Matrix4 FrameTransform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Cluster_getFramexform(Native, out value);
 				return value;
 			}
@@ -748,11 +748,11 @@ namespace BulletSharp.SoftBody
 			set => btSoftBody_Cluster_setImass(Native, value);
 		}
 
-		public Matrix4x4 InverseWorldInertia
+		public Matrix4 InverseWorldInertia
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Cluster_getInvwi(Native, out value);
 				return value;
 			}
@@ -793,11 +793,11 @@ namespace BulletSharp.SoftBody
 			set => btSoftBody_Cluster_setLv(Native, ref value);
 		}
 
-		public Matrix4x4 Locii
+		public Matrix4 Locii
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Cluster_getLocii(Native, out value);
 				return value;
 			}
@@ -1423,11 +1423,11 @@ namespace BulletSharp.SoftBody
 			set => btSoftBody_Joint_setErp(Native, value);
 		}
 
-		public Matrix4x4 MassMatrix
+		public Matrix4 MassMatrix
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Joint_getMassmatrix(Native, out value);
 				return value;
 			}
@@ -1783,11 +1783,11 @@ namespace BulletSharp.SoftBody
 			Native = native;
 		}
 
-		public Matrix4x4 Aqq
+		public Matrix4 Aqq
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Pose_getAqq(Native, out value);
 				return value;
 			}
@@ -1829,22 +1829,22 @@ namespace BulletSharp.SoftBody
 			}
 		}
 
-		public Matrix4x4 Rotation
+		public Matrix4 Rotation
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Pose_getRot(Native, out value);
 				return value;
 			}
 			set => btSoftBody_Pose_setRot(Native, ref value);
 		}
 
-		public Matrix4x4 Scale
+		public Matrix4 Scale
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_Pose_getScl(Native, out value);
 				return value;
 			}
@@ -1972,11 +1972,11 @@ namespace BulletSharp.SoftBody
 			Native = btSoftBody_RContact_new();
 		}
 
-		public Matrix4x4 C0
+		public Matrix4 C0
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_RContact_getC0(Native, out value);
 				return value;
 			}
@@ -2393,11 +2393,11 @@ namespace BulletSharp.SoftBody
 			Native = native;
 		}
 
-		public Matrix4x4 F
+		public Matrix4 F
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btSoftBody_TetraScratch_getF(Native, out value);
 				return value;
 			}
@@ -3012,7 +3012,7 @@ namespace BulletSharp.SoftBody
 			btSoftBody_staticSolve(Native, iterations);
 		}
 
-		public void Transform(Matrix4x4 trs)
+		public void Transform(Matrix4 trs)
 		{
 			btSoftBody_transform(Native, ref trs);
 		}

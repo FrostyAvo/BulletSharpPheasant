@@ -2,7 +2,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace BulletSharp
 {
@@ -35,7 +35,7 @@ namespace BulletSharp
         float[] forwardImpulse = new float[0];
         float[] sideImpulse = new float[0];
 
-        public Matrix4x4 ChassisWorldTransform
+        public Matrix4 ChassisWorldTransform
         {
             get
             {
@@ -99,7 +99,7 @@ namespace BulletSharp
             indexForwardAxis = forwardIndex;
         }
 
-        public Matrix4x4 GetWheelTransformWS(int wheelIndex)
+        public Matrix4 GetWheelTransformWS(int wheelIndex)
         {
             Debug.Assert(wheelIndex < NumWheels);
             return wheelInfo[wheelIndex].WorldTransform;
@@ -198,8 +198,8 @@ namespace BulletSharp
                     wheelColor = magenta;
                 }
 
-                Matrix4x4 transform = wheelInfo.WorldTransform;
-                Vector3 wheelPosWS = transform.Translation;
+                Matrix4 transform = wheelInfo.WorldTransform;
+                Vector3 wheelPosWS = transform.ExtractTranslation();
 
                 Vector3 axle = new Vector3(
                     transform.GetComponent(0, RightAxis),
@@ -319,7 +319,7 @@ namespace BulletSharp
 
         private void ResolveSingleBilateral(RigidBody body1, Vector3 pos1, RigidBody body2, Vector3 pos2, float distance, Vector3 normal, ref float impulse, float timeStep)
         {
-            float normalLenSqr = normal.LengthSquared();
+            float normalLenSqr = normal.LengthSquared;
             Debug.Assert(System.Math.Abs(normalLenSqr) < 1.1f);
             if (normalLenSqr > 1.1f)
             {
@@ -333,12 +333,12 @@ namespace BulletSharp
             Vector3 vel2 = body2.GetVelocityInLocalPoint(rel_pos2);
             Vector3 vel = vel1 - vel2;
 
-            Matrix4x4 centerOfMass1 = body1.CenterOfMassTransform;
-            Matrix4x4 centerOfMass2 = body2.CenterOfMassTransform;
-            Matrix4x4 world2A = Matrix4x4.Transpose(centerOfMass1.GetBasis());
-            Matrix4x4 world2B = Matrix4x4.Transpose(centerOfMass2.GetBasis());
-            Vector3 m_aJ = Vector3.Transform(Vector3.Cross(rel_pos1, normal), world2A);
-            Vector3 m_bJ = Vector3.Transform(Vector3.Cross(rel_pos2, -normal), world2B);
+            Matrix4 centerOfMass1 = body1.CenterOfMassTransform;
+            Matrix4 centerOfMass2 = body2.CenterOfMassTransform;
+            Matrix4 world2A = Matrix4.Transpose(centerOfMass1.GetBasis());
+            Matrix4 world2B = Matrix4.Transpose(centerOfMass2.GetBasis());
+            Vector3 m_aJ = (world2A * new Vector4(Vector3.Cross(rel_pos1, normal), 0.0f)).Xyz;
+            Vector3 m_bJ = (world2B * new Vector4(Vector3.Cross(rel_pos2, -normal), 0.0f)).Xyz;
             Vector3 m_0MinvJt = body1.InvInertiaDiagLocal * m_aJ;
             Vector3 m_1MinvJt = body2.InvInertiaDiagLocal * m_bJ;
             float dot0, dot1;
@@ -399,7 +399,7 @@ namespace BulletSharp
                 RigidBody groundObject = wheel.RaycastInfo.GroundObject as RigidBody;
                 if (groundObject != null)
                 {
-                    Matrix4x4 wheelTrans = GetWheelTransformWS(i);
+                    Matrix4 wheelTrans = GetWheelTransformWS(i);
 
                     axle[i] = new Vector3(
                         wheelTrans.GetComponent(0, indexRightAxis),
@@ -521,7 +521,7 @@ namespace BulletSharp
 
 #if ROLLING_INFLUENCE_FIX // fix. It only worked if car's up was along Y - VT.
                     //Vector4 vChassisWorldUp = RigidBody.CenterOfMassTransform.get_Columns(indexUpAxis);
-                    Matrix4x4 centerOfMass = RigidBody.CenterOfMassTransform;
+                    Matrix4 centerOfMass = RigidBody.CenterOfMassTransform;
                     Vector3 vChassisWorldUp = new Vector3(
                         centerOfMass.GetComponent(0, indexUpAxis),
                         centerOfMass.GetComponent(1, indexUpAxis),
@@ -599,9 +599,9 @@ namespace BulletSharp
                 UpdateWheelTransform(i, false);
             }
 
-            currentVehicleSpeedKmHour = 3.6f * RigidBody.LinearVelocity.Length();
+            currentVehicleSpeedKmHour = 3.6f * RigidBody.LinearVelocity.Length;
 
-            Matrix4x4 chassisTrans = ChassisWorldTransform;
+            Matrix4 chassisTrans = ChassisWorldTransform;
 
             Vector3 forwardW = new Vector3(
                 chassisTrans.GetComponent(0, indexForwardAxis),
@@ -651,7 +651,7 @@ namespace BulletSharp
 
                 if (wheel.RaycastInfo.IsInContact)
                 {
-                    Matrix4x4 chassisWorldTransform = ChassisWorldTransform;
+                    Matrix4 chassisWorldTransform = ChassisWorldTransform;
 
                     Vector3 fwd = new Vector3(
                         chassisWorldTransform.GetComponent(0, indexForwardAxis),
@@ -687,10 +687,10 @@ namespace BulletSharp
             //up.Normalize();
 
             //rotate around steering over the wheelAxleWS
-            Matrix4x4 steeringMat = Matrix4x4.CreateFromAxisAngle(up, wheel.Steering);
-            Matrix4x4 rotatingMat = Matrix4x4.CreateFromAxisAngle(right, -wheel.Rotation);
+            Matrix4 steeringMat = Matrix4.CreateFromAxisAngle(up, wheel.Steering);
+            Matrix4 rotatingMat = Matrix4.CreateFromAxisAngle(right, -wheel.Rotation);
 
-            Matrix4x4 basis2 = new Matrix4x4();
+            Matrix4 basis2 = new Matrix4();
             basis2.M11 = right.X;
             basis2.M12 = fwd.X;
             basis2.M13 = up.X;
@@ -701,8 +701,8 @@ namespace BulletSharp
             basis2.M32 = fwd.Z;
             basis2.M13 = up.Z;
 
-            Matrix4x4 transform = steeringMat * rotatingMat * basis2;
-            transform.Translation = wheel.RaycastInfo.HardPointWS + wheel.RaycastInfo.WheelDirectionWS * wheel.RaycastInfo.SuspensionLength;
+            Matrix4 transform = steeringMat * rotatingMat * basis2;
+            transform.Row3.Xyz = wheel.RaycastInfo.HardPointWS + wheel.RaycastInfo.WheelDirectionWS * wheel.RaycastInfo.SuspensionLength;
             wheel.WorldTransform = transform;
         }
 
@@ -710,16 +710,15 @@ namespace BulletSharp
         {
             wheel.RaycastInfo.IsInContact = false;
 
-            Matrix4x4 chassisTrans = ChassisWorldTransform;
+            Matrix4 chassisTrans = ChassisWorldTransform;
             if (interpolatedTransform && RigidBody.MotionState != null)
             {
                 chassisTrans = RigidBody.MotionState.WorldTransform;
             }
 
-            wheel.RaycastInfo.HardPointWS = Vector3.Transform(wheel.ChassisConnectionPointCS, chassisTrans);
-            Matrix4x4 chassisTransBasis = chassisTrans.GetBasis();
-            wheel.RaycastInfo.WheelDirectionWS = Vector3.Transform(wheel.WheelDirectionCS, chassisTransBasis);
-            wheel.RaycastInfo.WheelAxleWS = Vector3.Transform(wheel.WheelAxleCS, chassisTransBasis);
+            wheel.RaycastInfo.HardPointWS = (chassisTrans * new Vector4(wheel.ChassisConnectionPointCS, 1.0f)).Xyz;
+            wheel.RaycastInfo.WheelDirectionWS = (chassisTrans * new Vector4(wheel.WheelDirectionCS, 0.0f)).Xyz;
+            wheel.RaycastInfo.WheelAxleWS = (chassisTrans * new Vector4(wheel.WheelAxleCS, 0.0f)).Xyz;
         }
 	}
 

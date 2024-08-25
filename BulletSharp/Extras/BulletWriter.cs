@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace BulletSharp
 {
@@ -29,7 +29,7 @@ namespace BulletSharp
             Write(value);
         }
 
-        public void Write(Matrix4x4 value)
+        public void Write(Matrix4 value)
         {
             Write(value.M11);
             Write(value.M21);
@@ -49,7 +49,7 @@ namespace BulletSharp
             Write(1);
         }
 
-        public void Write(Matrix4x4 value, int position)
+        public void Write(Matrix4 value, int position)
         {
             BaseStream.Position = position;
             Write(value);

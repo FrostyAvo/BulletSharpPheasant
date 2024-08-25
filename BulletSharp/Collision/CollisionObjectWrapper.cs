@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -41,11 +41,11 @@ namespace BulletSharp
 			set => btCollisionObjectWrapper_setPartId(Native, value);
 		}
 
-		public Matrix4x4 WorldTransform
+		public Matrix4 WorldTransform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btCollisionObjectWrapper_getWorldTransform(Native, out value);
 				return value;
 			}

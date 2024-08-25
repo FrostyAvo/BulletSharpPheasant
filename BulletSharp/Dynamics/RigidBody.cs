@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -194,17 +194,17 @@ namespace BulletSharp
 			btRigidBody_integrateVelocities(Native, step);
 		}
 
-		public void PredictIntegratedTransform(float step, out Matrix4x4 predictedTransform)
+		public void PredictIntegratedTransform(float step, out Matrix4 predictedTransform)
 		{
 			btRigidBody_predictIntegratedTransform(Native, step, out predictedTransform);
 		}
 
-		public void ProceedToTransformRef(ref Matrix4x4 newTrans)
+		public void ProceedToTransformRef(ref Matrix4 newTrans)
 		{
 			btRigidBody_proceedToTransform(Native, ref newTrans);
 		}
 
-		public void ProceedToTransform(Matrix4x4 newTrans)
+		public void ProceedToTransform(Matrix4 newTrans)
 		{
 			btRigidBody_proceedToTransform(Native, ref newTrans);
 		}
@@ -316,11 +316,11 @@ namespace BulletSharp
 			}
 		}
 
-		public Matrix4x4 CenterOfMassTransform
+		public Matrix4 CenterOfMassTransform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btRigidBody_getCenterOfMassTransform(Native, out value);
 				return value;
 			}
@@ -367,11 +367,11 @@ namespace BulletSharp
 			set => btRigidBody_setInvInertiaDiagLocal(Native, ref value);
 		}
 
-		public Matrix4x4 InvInertiaTensorWorld
+		public Matrix4 InvInertiaTensorWorld
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btRigidBody_getInvInertiaTensorWorld(Native, out value);
 				return value;
 			}

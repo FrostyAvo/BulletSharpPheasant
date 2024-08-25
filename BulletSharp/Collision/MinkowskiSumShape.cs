@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -19,22 +19,22 @@ namespace BulletSharp
 
 		public ConvexShape ShapeB { get; }
 
-		public Matrix4x4 TransformA
+		public Matrix4 TransformA
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btMinkowskiSumShape_getTransformA(Native, out value);
 				return value;
 			}
 			set => btMinkowskiSumShape_setTransformA(Native, ref value);
 		}
 
-		public Matrix4x4 TransformB
+		public Matrix4 TransformB
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btMinkowskiSumShape_GetTransformB(Native, out value);
 				return value;
 			}

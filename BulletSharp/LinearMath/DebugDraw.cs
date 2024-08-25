@@ -24,7 +24,7 @@
 using System;
 using System.Security;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -37,26 +37,26 @@ namespace BulletSharp
 		delegate void DrawArcUnmanagedDelegate([In] ref Vector3 center, [In] ref Vector3 normal, [In] ref Vector3 axis, float radiusA, float radiusB,
 			float minAngle, float maxAngle, ref Vector3 color, bool drawSect, float stepDegrees);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
-		delegate void DrawBoxUnmanagedDelegate([In] ref Vector3 bbMin, [In] ref Vector3 bbMax, [In] ref Matrix4x4 trans, [In] ref Vector3 color);
+		delegate void DrawBoxUnmanagedDelegate([In] ref Vector3 bbMin, [In] ref Vector3 bbMax, [In] ref Matrix4 trans, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
-		delegate void DrawCapsuleUnmanagedDelegate(float radius, float halfHeight, int upAxis, [In] ref Matrix4x4 transform, [In] ref Vector3 color);
+		delegate void DrawCapsuleUnmanagedDelegate(float radius, float halfHeight, int upAxis, [In] ref Matrix4 transform, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
-		delegate void DrawConeUnmanagedDelegate(float radius, float height, int upAxis, [In] ref Matrix4x4 transform, [In] ref Vector3 color);
+		delegate void DrawConeUnmanagedDelegate(float radius, float height, int upAxis, [In] ref Matrix4 transform, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
 		delegate void DrawContactPointUnmanagedDelegate([In] ref Vector3 pointOnB, [In] ref Vector3 normalOnB, float distance, int lifeTime, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
-		delegate void DrawCylinderUnmanagedDelegate(float radius, float halfHeight, int upAxis, [In] ref Matrix4x4 transform, [In] ref Vector3 color);
+		delegate void DrawCylinderUnmanagedDelegate(float radius, float halfHeight, int upAxis, [In] ref Matrix4 transform, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
 		delegate void DrawLineUnmanagedDelegate([In] ref Vector3 from, [In] ref Vector3 to, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
-		delegate void DrawPlaneUnmanagedDelegate([In] ref Vector3 planeNormal, float planeConst, [In] ref Matrix4x4 transform, [In] ref Vector3 color);
+		delegate void DrawPlaneUnmanagedDelegate([In] ref Vector3 planeNormal, float planeConst, [In] ref Matrix4 transform, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
-		delegate void DrawSphereUnmanagedDelegate(float radius, [In] ref Matrix4x4 transform, [In] ref Vector3 color);
+		delegate void DrawSphereUnmanagedDelegate(float radius, [In] ref Matrix4 transform, [In] ref Vector3 color);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
 		delegate void DrawSpherePatchUnmanagedDelegate([In] ref Vector3 center, [In] ref Vector3 up, [In] ref Vector3 axis, float radius,
 			float minTh, float maxTh, float minPs, float maxPs, [In] ref Vector3 color, float stepDegrees);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
-		delegate void DrawTransformUnmanagedDelegate([In] ref Matrix4x4 transform, float orthoLen);
+		delegate void DrawTransformUnmanagedDelegate([In] ref Matrix4 transform, float orthoLen);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
 		delegate void DrawTriangleUnmanagedDelegate([In] ref Vector3 v0, [In] ref Vector3 v1, [In] ref Vector3 v2, [In] ref Vector3 color, float alpha);
 		[UnmanagedFunctionPointer(BulletSharp.Native.Conv), SuppressUnmanagedCodeSecurity]
@@ -243,27 +243,27 @@ namespace BulletSharp
 			DrawLine(ref p8, ref p5, ref color);
 		}
 
-		public virtual void DrawBox(ref Vector3 bbMin, ref Vector3 bbMax, ref Matrix4x4 trans, ref Vector3 color)
+		public virtual void DrawBox(ref Vector3 bbMin, ref Vector3 bbMax, ref Matrix4 trans, ref Vector3 color)
 		{
 			Vector3 p1, p2, p3, p4, p5, p6, p7, p8;
 			Vector3 point = bbMin;
-			p1 = Vector3.Transform(point, trans);
-			point.X = bbMax.X;
-			p2 = Vector3.Transform(point, trans);
-			point.Y = bbMax.Y;
-			p3 = Vector3.Transform(point, trans);
-			point.X = bbMin.X;
-			p4 = Vector3.Transform(point, trans);
-			point.Z = bbMax.Z;
-			p8 = Vector3.Transform(point, trans);
-			point.X = bbMax.X;
-			p7 = Vector3.Transform(point, trans);
-			point.Y = bbMin.Y;
-			p6 = Vector3.Transform(point, trans);
-			point.X = bbMin.X;
-			p5 = Vector3.Transform(point, trans);
+			p1 = (trans * new Vector4(point, 1.0f)).Xyz;
+            point.X = bbMax.X;
+			p2 = (trans * new Vector4(point, 1.0f)).Xyz;
+            point.Y = bbMax.Y;
+			p3 = (trans * new Vector4(point, 1.0f)).Xyz;
+            point.X = bbMin.X;
+			p4 = (trans * new Vector4(point, 1.0f)).Xyz;
+            point.Z = bbMax.Z;
+			p8 = (trans * new Vector4(point, 1.0f)).Xyz;
+            point.X = bbMax.X;
+			p7 = (trans * new Vector4(point, 1.0f)).Xyz;
+            point.Y = bbMin.Y;
+			p6 = (trans * new Vector4(point, 1.0f)).Xyz;
+            point.X = bbMin.X;
+			p5 = (trans * new Vector4(point, 1.0f)).Xyz;
 
-			DrawLine(ref p1, ref p2, ref color);
+            DrawLine(ref p1, ref p2, ref color);
 			DrawLine(ref p2, ref p3, ref color);
 			DrawLine(ref p3, ref p4, ref color);
 			DrawLine(ref p4, ref p1, ref color);
@@ -279,16 +279,16 @@ namespace BulletSharp
 			DrawLine(ref p8, ref p5, ref color);
 		}
 
-		public virtual void DrawCapsule(float radius, float halfHeight, int upAxis, ref Matrix4x4 transform, ref Vector3 color)
+		public virtual void DrawCapsule(float radius, float halfHeight, int upAxis, ref Matrix4 transform, ref Vector3 color)
 		{
 			const int stepDegrees = 30;
 
-			void DrawCapsuleCap(ref Vector3 capOffset, ref Matrix4x4 capTransform, ref Vector3 capColor, float axisDirection)
+			void DrawCapsuleCap(ref Vector3 capOffset, ref Matrix4 capTransform, ref Vector3 capColor, float axisDirection)
 			{
-				Matrix4x4 childTransform = capTransform;
-				childTransform.Translation = Vector3.Transform(capOffset, capTransform);
-				Matrix4x4 childBasis = childTransform.GetBasis();
-				Vector3 center = childTransform.Translation;
+				Matrix4 childTransform = capTransform;
+				childTransform.Row3.Xyz = (capTransform * new Vector4(capOffset, 1.0f)).Xyz;
+				Matrix4 childBasis = childTransform.GetBasis();
+				Vector3 center = childTransform.ExtractTranslation();
 				Vector3 up = childBasis.GetColumn((upAxis + 1) % 3);
 				Vector3 axis = axisDirection * childBasis.GetColumn(upAxis);
 				float minTh = -MathUtil.SIMD_HALF_PI;
@@ -309,8 +309,7 @@ namespace BulletSharp
 			DrawCapsuleCap(ref capEnd, ref transform, ref color, 1);
 
 			// Draw some additional lines
-			Vector3 start = transform.Translation;
-			Matrix4x4 basis = transform.GetBasis();
+			Vector3 start = transform.ExtractTranslation();
 			for (int i = 0; i < 360; i += stepDegrees)
 			{
 				float primaryDirection = (float)System.Math.Sin(i * MathUtil.SIMD_RADS_PER_DEG) * radius;
@@ -319,15 +318,15 @@ namespace BulletSharp
 				capStart.SetComponent((upAxis + 1) % 3, primaryDirection);
 				capEnd.SetComponent((upAxis + 2) % 3, secondaryDirection);
 				capStart.SetComponent((upAxis + 2) % 3, secondaryDirection);
-				DrawLine(start + Vector3.Transform(capStart, basis), start + Vector3.Transform(capEnd, basis), color);
+				DrawLine(start + (transform * new Vector4(capStart, 0.0f)).Xyz, start + (transform * new Vector4(capEnd, 0.0f)).Xyz, color);
 			}
 		}
 
-		public virtual void DrawCone(float radius, float height, int upAxis, ref Matrix4x4 transform, ref Vector3 color)
+		public virtual void DrawCone(float radius, float height, int upAxis, ref Matrix4 transform, ref Vector3 color)
 		{
-			Vector3 start = transform.Translation;
+			Vector3 start = transform.ExtractTranslation();
 
-			Vector3 offsetHeight = Vector3.Zero;
+            Vector3 offsetHeight = Vector3.Zero;
 			offsetHeight.SetComponent(upAxis, height * 0.5f);
 			Vector3 offsetRadius = Vector3.Zero;
 			offsetRadius.SetComponent((upAxis + 1) % 3, radius);
@@ -335,9 +334,8 @@ namespace BulletSharp
 			Vector3 offset2Radius = Vector3.Zero;
 			offsetRadius.SetComponent((upAxis + 2) % 3, radius);
 
-			Matrix4x4 basis = transform.GetBasis();
-			Vector3 from = start + Vector3.Transform(offsetHeight, basis);
-			Vector3 to = start + Vector3.Transform(-offsetHeight, basis);
+			Vector3 from = start + (transform * new Vector4(offsetHeight, 0.0f)).Xyz;
+			Vector3 to = start + (transform * new Vector4(-offsetHeight, 0.0f)).Xyz;
 			DrawLine(from, to + offsetRadius, color);
 			DrawLine(from, to - offsetRadius, color);
 			DrawLine(from, to + offset2Radius, color);
@@ -350,19 +348,18 @@ namespace BulletSharp
 			DrawLine(ref pointOnB, ref to, ref color);
 		}
 
-		public virtual void DrawCylinder(float radius, float halfHeight, int upAxis, ref Matrix4x4 transform, ref Vector3 color)
+		public virtual void DrawCylinder(float radius, float halfHeight, int upAxis, ref Matrix4 transform, ref Vector3 color)
 		{
-			Vector3 start = transform.Translation;
-			Matrix4x4 basis = transform.GetBasis();
+			Vector3 start = transform.ExtractTranslation();
 			Vector3 offsetHeight = Vector3.Zero;
 			offsetHeight.SetComponent(upAxis, halfHeight);
 			Vector3 offsetRadius = Vector3.Zero;
 			offsetRadius.SetComponent((upAxis + 1) % 3, radius);
-			DrawLine(start + Vector3.Transform(offsetHeight + offsetRadius, basis), start + Vector3.Transform(-offsetHeight + offsetRadius, basis), color);
-			DrawLine(start + Vector3.Transform(offsetHeight - offsetRadius, basis), start + Vector3.Transform(-offsetHeight - offsetRadius, basis), color);
+			DrawLine(start + (transform * new Vector4(offsetHeight + offsetRadius, 0.0f)).Xyz, start + (transform * new Vector4(-offsetHeight + offsetRadius, 0.0f)).Xyz, color);
+			DrawLine(start + (transform * new Vector4(offsetHeight - offsetRadius, 0.0f)).Xyz, start + (transform * new Vector4(-offsetHeight - offsetRadius, 0.0f)).Xyz, color);
 		}
 
-		public virtual void DrawPlane(ref Vector3 planeNormal, float planeConst, ref Matrix4x4 transform, ref Vector3 color)
+		public virtual void DrawPlane(ref Vector3 planeNormal, float planeConst, ref Matrix4 transform, ref Vector3 color)
 		{
 			Vector3 planeOrigin = planeNormal * planeConst;
 			Vector3 vec0, vec1;
@@ -372,24 +369,23 @@ namespace BulletSharp
 			Vector3 pt1 = planeOrigin - vec0 * vecLen;
 			Vector3 pt2 = planeOrigin + vec1 * vecLen;
 			Vector3 pt3 = planeOrigin - vec1 * vecLen;
-			pt0 = Vector3.Transform(pt0, transform);
-			pt1 = Vector3.Transform(pt1, transform);
-			pt2 = Vector3.Transform(pt2, transform);
-			pt3 = Vector3.Transform(pt3, transform);
-			DrawLine(ref pt0, ref pt1, ref color);
+			pt0 = (transform * new Vector4(pt0, 1.0f)).Xyz;
+            pt1 = (transform * new Vector4(pt1, 1.0f)).Xyz;
+            pt2 = (transform * new Vector4(pt2, 1.0f)).Xyz;
+            pt3 = (transform * new Vector4(pt3, 1.0f)).Xyz;
+            DrawLine(ref pt0, ref pt1, ref color);
 			DrawLine(ref pt2, ref pt3, ref color);
 		}
 
-		public virtual void DrawSphere(float radius, ref Matrix4x4 transform, ref Vector3 color)
+		public virtual void DrawSphere(float radius, ref Matrix4 transform, ref Vector3 color)
 		{
-			Vector3 start = transform.Translation;
-			Matrix4x4 basis = transform.GetBasis();
+			Vector3 start = transform.ExtractTranslation();
 
-			Vector3 xoffs = Vector3.Transform(new Vector3(radius, 0, 0), basis);
-			Vector3 yoffs = Vector3.Transform(new Vector3(0, radius, 0), basis);
-			Vector3 zoffs = Vector3.Transform(new Vector3(0, 0, radius), basis);
+			Vector3 xoffs = (transform * new Vector4(new Vector3(radius, 0, 0), 0.0f)).Xyz;
+            Vector3 yoffs = (transform * new Vector4(new Vector3(0, radius, 0), 0.0f)).Xyz;
+            Vector3 zoffs = (transform * new Vector4(new Vector3(0, 0, radius), 0.0f)).Xyz;
 
-			Vector3 xn = start - xoffs;
+            Vector3 xn = start - xoffs;
 			Vector3 xp = start + xoffs;
 			Vector3 yn = start - yoffs;
 			Vector3 yp = start + yoffs;
@@ -417,7 +413,7 @@ namespace BulletSharp
 
 		public virtual void DrawSphere(ref Vector3 p, float radius, ref Vector3 color)
 		{
-			Matrix4x4 tr = Matrix4x4.CreateTranslation(p);
+			Matrix4 tr = Matrix4.CreateTranslation(p);
 			DrawSphere(radius, ref tr, ref color);
 		}
 
@@ -547,30 +543,29 @@ namespace BulletSharp
 			DrawLine(ref v2, ref v0, ref color);
 		}
 
-		public virtual void DrawTransform(ref Matrix4x4 transform, float orthoLen)
+		public virtual void DrawTransform(ref Matrix4 transform, float orthoLen)
 		{
-			Vector3 start = transform.Translation;
-			Matrix4x4 basis = transform.GetBasis();
+			Vector3 start = transform.ExtractTranslation();
 
 			Vector3 ortho = new Vector3(orthoLen, 0, 0);
 			Vector3 colour = new Vector3(0.7f, 0, 0);
-			Vector3 temp = Vector3.Transform(ortho, basis);
-			temp += start;
+			Vector3 temp = (transform * new Vector4(ortho, 0.0f)).Xyz;
+            temp += start;
 			DrawLine(ref start, ref temp, ref colour);
 
 			ortho.X = 0;
 			ortho.Y = orthoLen;
 			colour.X = 0;
 			colour.Y = 0.7f;
-			temp = Vector3.Transform(ortho, basis);
-			temp += start;
+			temp = (transform * new Vector4(ortho, 0.0f)).Xyz;
+            temp += start;
 			DrawLine(ref start, ref temp, ref colour);
 
 			ortho.Y = 0;
 			ortho.Z = orthoLen;
 			colour.Y = 0;
 			colour.Z = 0.7f;
-			temp = Vector3.Transform(ortho, basis);
+			temp = (transform * new Vector4(ortho, 0.0f)).Xyz;
 			temp += start;
 			DrawLine(ref start, ref temp, ref colour);
 		}

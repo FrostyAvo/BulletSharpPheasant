@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -122,7 +122,7 @@ namespace BulletSharp
 			return btCollisionObject_getCustomDebugColor(Native, out colorRgb);
 		}
 
-		public void GetWorldTransform(out Matrix4x4 transform)
+		public void GetWorldTransform(out Matrix4 transform)
 		{
 			btCollisionObject_getWorldTransform(Native, out transform);
 		}
@@ -307,11 +307,11 @@ namespace BulletSharp
 			set => btCollisionObject_setInterpolationLinearVelocity(Native, ref value);
 		}
 
-		public Matrix4x4 InterpolationWorldTransform
+		public Matrix4 InterpolationWorldTransform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btCollisionObject_getInterpolationWorldTransform(Native, out value);
 				return value;
 			}
@@ -370,11 +370,11 @@ namespace BulletSharp
 			set => btCollisionObject_setWorldArrayIndex(Native, value);
 		}
 
-		public Matrix4x4 WorldTransform
+		public Matrix4 WorldTransform
 		{
 			get
 			{
-				Matrix4x4 value;
+				Matrix4 value;
 				btCollisionObject_getWorldTransform(Native, out value);
 				return value;
 			}

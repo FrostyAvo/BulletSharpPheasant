@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -21,7 +21,7 @@ namespace BulletSharp
 				btConvexCast_CastResult_DebugDraw(Native, fraction);
 			}
 
-			public void DrawCoordSystem(Matrix4x4 trans)
+			public void DrawCoordSystem(Matrix4 trans)
 			{
 				btConvexCast_CastResult_drawCoordSystem(Native, ref trans);
 			}
@@ -64,22 +64,22 @@ namespace BulletSharp
 				set => btConvexCast_CastResult_setHitPoint(Native, ref value);
 			}
 
-			public Matrix4x4 HitTransformA
+			public Matrix4 HitTransformA
 			{
 				get
 				{
-					Matrix4x4 value;
+					Matrix4 value;
 					btConvexCast_CastResult_getHitTransformA(Native, out value);
 					return value;
 				}
 				set => btConvexCast_CastResult_setHitTransformA(Native, ref value);
 			}
 
-			public Matrix4x4 HitTransformB
+			public Matrix4 HitTransformB
 			{
 				get
 				{
-					Matrix4x4 value;
+					Matrix4 value;
 					btConvexCast_CastResult_getHitTransformB(Native, out value);
 					return value;
 				}
@@ -107,7 +107,7 @@ namespace BulletSharp
 		{
 		}
 
-		public bool CalcTimeOfImpact(Matrix4x4 fromA, Matrix4x4 toA, Matrix4x4 fromB, Matrix4x4 toB,
+		public bool CalcTimeOfImpact(Matrix4 fromA, Matrix4 toA, Matrix4 fromB, Matrix4 toB,
 			CastResult result)
 		{
 			return btConvexCast_calcTimeOfImpact(Native, ref fromA, ref toA, ref fromB,

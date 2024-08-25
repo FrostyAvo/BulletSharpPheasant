@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -64,7 +64,7 @@ namespace BulletSharp
 			btPoint2PointConstraint_getInfo1NonVirtual(Native, info.Native);
 		}
 
-		public void GetInfo2NonVirtual(ConstraintInfo2 info, Matrix4x4 body0Trans, Matrix4x4 body1Trans)
+		public void GetInfo2NonVirtual(ConstraintInfo2 info, Matrix4 body0Trans, Matrix4 body1Trans)
 		{
 			btPoint2PointConstraint_getInfo2NonVirtual(Native, info.Native, ref body0Trans,
 				ref body1Trans);

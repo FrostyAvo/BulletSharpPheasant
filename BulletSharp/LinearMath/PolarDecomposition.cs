@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+using OpenTK.Mathematics;
 using static BulletSharp.UnsafeNativeMethods;
 
 namespace BulletSharp
@@ -12,7 +12,7 @@ namespace BulletSharp
 			InitializeUserOwned(native);
 		}
 
-		public uint Decompose(ref Matrix4x4 a, out Matrix4x4 u, out Matrix4x4 h)
+		public uint Decompose(ref Matrix4 a, out Matrix4 u, out Matrix4 h)
 		{
 			return btPolarDecomposition_decompose(Native, ref a, out u, out h);
 		}

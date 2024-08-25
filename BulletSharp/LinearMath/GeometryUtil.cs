@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using OpenTK.Mathematics;
 
 namespace BulletSharp
 {
@@ -28,7 +28,7 @@ namespace BulletSharp
 						Vector3 edge1 = vertexArray[k] - vertexArray[i];
 
 						Vector3 normal = Vector3.Cross(edge0, edge1);
-						if (normal.LengthSquared() > 0.0001)
+						if (normal.LengthSquared > 0.0001)
 						{
 							normal = Vector3.Normalize(normal);
 							if (!Vector4EnumerableContainsVector3(planeEquations, normal))
@@ -90,9 +90,9 @@ namespace BulletSharp
 						Vector3 n3n1 = Vector3.Cross(planeNormals[k], planeNormals[i]);
 						Vector3 n1n2 = Vector3.Cross(planeNormals[i], planeNormals[j]);
 
-						if ((n2n3.LengthSquared() > 0.0001f) &&
-							 (n3n1.LengthSquared() > 0.0001f) &&
-							 (n1n2.LengthSquared() > 0.0001f))
+						if ((n2n3.LengthSquared > 0.0001f) &&
+							 (n3n1.LengthSquared > 0.0001f) &&
+							 (n1n2.LengthSquared > 0.0001f))
 						{
 							//point P out of 3 plane equations:
 
