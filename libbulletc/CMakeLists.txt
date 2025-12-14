@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED (VERSION 2.8.9)
+CMAKE_MINIMUM_REQUIRED (VERSION 3.5)
 PROJECT (libbulletc)
 
 IF (NOT CMAKE_BUILD_TYPE)
@@ -427,3 +427,4 @@ ADD_LIBRARY(${BULLETC_LIB} SHARED
 TARGET_LINK_LIBRARIES(${BULLETC_LIB} BulletCollision BulletDynamics LinearMath BulletFileLoader BulletSoftBody BulletWorldImporter BulletXmlWorldImporter HACD)
 
 ADD_SUBDIRECTORY(test)
+
